@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>הדף היומי</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+
+  <!-- ══ מסך נעילה ══════════════════════════════════════════ -->
+  <div id="lock-screen">
+    <div class="lock-logo">הדף <span>היומי</span></div>
+    <div class="lock-card">
+      <div>
+        <label for="password-input" id="lock-label">סיסמה</label>
+        <input type="password" id="password-input" placeholder="הכנס סיסמה..."
+               autocomplete="current-password" />
+      </div>
+      <div class="lock-error" id="lock-error"></div>
+      <button class="btn btn-primary" id="unlock-btn">כניסה</button>
+    </div>
+  </div>
+
+  <!-- ══ אפליקציה ראשית ════════════════════════════════════ -->
+  <div id="app-shell">
+
+    <div id="topbar">
+      <div class="topbar-logo">הדף היומי</div>
+      <div class="topbar-center">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="journal">יומן</button>
+          <button class="tab-btn"        data-tab="history">היסטוריה</button>
+          <button class="tab-btn"        data-tab="notes">רשימות</button>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="settings-btn" id="settings-btn" title="הגדרות">⚙</button>
+      </div>
+    </div>
+
+    <div id="main-content">
+
+      <!-- ══ יומן ══════════════════════════════════════════════ -->
+      <div id="tab-journal" class="tab-content journal-tab-layout">
+
+        <div class="date-nav">
+          <button class="btn btn-ghost date-nav-btn" id="date-prev" title="יום קודם">«</button>
+          <div class="date-nav-center" title="לחץ לבחירת תאריך">
+            <div id="journal-date-heb"></div>
+            <div id="journal-date-greg"></div>
+          </div>
+          <button class="btn btn-ghost date-nav-btn" id="date-next" title="יום הבא">»</button>
+        </div>
+
+        <input type="date" id="journal-datepicker"
+               style="position:fixed;opacity:0;pointer-events:none;width:1px;height:1px;" />
+
+        <div id="journal-entries" class="journal-entries-area"></div>
+
+        <div id="panel-overlay" class="panel-overlay hidden"></div>
+
+        <div id="entry-panel" class="entry-panel panel-hidden">
+          <div class="panel-input-row">
+            <textarea id="new-entry-content" class="chat-textarea"
+                      placeholder="כתוב משהו…" rows="1"></textarea>
+            <button class="submit-btn" id="entry-submit-btn" title="הוסף רשומה">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="19" x2="12" y2="5"/>
+                <polyline points="5 12 12 5 19 12"/>
+              </svg>
+            </button>
+          </div>
+          <div class="panel-meta-trigger">
+            <button class="meta-toggle-btn" id="meta-toggle" title="הוסף תגית, דירוג, קטגוריה">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="16"/>
+                <line x1="8" y1="12" x2="16" y2="12"/>
+              </svg>
+              <span>תגיות</span>
+            </button>
+          </div>
+          <div id="meta-row" class="panel-meta-row hidden">
+            <div class="tone-selector">
+              <button class="tone-btn" data-tone="positive">חיובי</button>
+              <button class="tone-btn" data-tone="neutral">ניטרלי</button>
+              <button class="tone-btn" data-tone="negative">שלילי</button>
+            </div>
+            <div style="position:relative;">
+              <button class="rating-btn" id="rating-btn">דירוג</button>
+              <div class="rating-popup hidden" id="rating-popup"></div>
+            </div>
+            <input class="cat-text-input" type="text" id="new-entry-cat"
+                   placeholder="קטגוריה..." />
+          </div>
+        </div>
+
+        <button class="journal-fab" id="journal-fab" title="הוסף רשומה">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5"  y1="12" x2="19" y2="12"/>
+          </svg>
+        </button>
+
+      </div>
+
+      <!-- ══ היסטוריה ══════════════════════════════════════════ -->
+      <div id="tab-history" class="tab-content hidden">
+        <div class="search-bar">
+
+          <!-- שורה 1: חיפוש טקסט רחב, מרוכז -->
+          <div class="search-row search-row-center">
+            <input class="search-input search-input-wide" id="search-text"
+                   type="text" placeholder="חפש בתוכן הרשומות..." />
+          </div>
+
+          <!-- שורה 2: קטגוריה | טון | מ-תאריך | עד-תאריך | ✕ -->
+          <div class="search-row search-row-center">
+            <input class="search-input search-input-sm" id="search-cat"
+                   type="text" placeholder="קטגוריה..." />
+            <select class="search-select" id="search-tone">
+              <option value="">כל התגיות</option>
+              <option value="positive">חיובי</option>
+              <option value="neutral">ניטרלי</option>
+              <option value="negative">שלילי</option>
+            </select>
+            <input class="date-input" type="date" id="search-from" />
+            <input class="date-input" type="date" id="search-to" />
+            <button class="search-clear-btn" id="search-clear" title="נקה חיפוש">✕</button>
+          </div>
+
+        </div>
+        <div id="history-entries"></div>
+      </div>
+
+      <!-- ══ רשימות ══════════════════════════════════════════ -->
+      <div id="tab-notes" class="tab-content hidden">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.6rem;">
+          <button id="sidebar-toggle" class="btn btn-ghost"
+                  style="font-size:.78rem;padding:.25rem .55rem;" title="סגור רשימה">◀</button>
+          <span class="text-muted" style="font-size:.8rem;">רשימות</span>
+        </div>
+        <div class="notes-layout">
+          <div class="notes-sidebar">
+            <div class="notes-sidebar-header">
+              <span>רשימות</span>
+              <button class="btn btn-ghost" id="add-note-btn"
+                      style="font-size:.78rem;padding:.2rem .55rem;">+ חדש</button>
+            </div>
+            <div class="notes-list" id="notes-list"></div>
+          </div>
+          <div class="note-editor" id="note-editor">
+            <div class="note-empty" id="note-empty">בחר רשימה או צור חדשה</div>
+            <div id="note-edit-area" class="hidden"
+                 style="display:flex;flex-direction:column;height:100%;">
+              <div class="note-editor-header">
+                <input class="note-title-input" id="note-title"
+                       type="text" placeholder="כותרת..." />
+                <span id="save-indicator" class="hidden"
+                      style="font-size:.75rem;color:var(--accent);flex-shrink:0;">✓ נשמר</span>
+                <button class="btn-danger btn" id="delete-note-btn"
+                        style="font-size:.78rem;">מחק</button>
+              </div>
+              <textarea class="note-content-input" id="note-content"
+                        placeholder="כתוב כאן..."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ מודל — עריכת רשומה ════════════════════════════════ -->
+  <div class="modal-overlay hidden" id="edit-modal">
+    <div class="modal" style="width:420px;">
+      <h3>עריכת רשומה</h3>
+      <textarea id="edit-entry-content" rows="4"
+        style="width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);
+               padding:.55rem .7rem;font-size:.9rem;font-family:var(--font);outline:none;
+               resize:vertical;direction:rtl;"></textarea>
+      <div class="add-form-row">
+        <div class="tone-selector" id="edit-tone-selector">
+          <button class="tone-btn" data-tone="positive">חיובי</button>
+          <button class="tone-btn" data-tone="neutral">ניטרלי</button>
+          <button class="tone-btn" data-tone="negative">שלילי</button>
+        </div>
+        <div style="position:relative;">
+          <button class="rating-btn" id="edit-rating-btn">דירוג</button>
+          <div class="rating-popup hidden" id="edit-rating-popup"></div>
+        </div>
+        <input class="cat-text-input" type="text" id="edit-entry-cat"
+               placeholder="קטגוריה..." />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="edit-save-btn"   style="width:auto;">שמור</button>
+        <button class="btn btn-ghost"   id="edit-cancel-btn">ביטול</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ מודל — הגדרות ══════════════════════════════════════ -->
+  <div class="modal-overlay hidden" id="settings-modal">
+    <div class="modal" style="width:360px;">
+      <h3>הגדרות</h3>
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        <div>
+          <label class="text-muted" style="display:block;margin-bottom:.3rem;">נעילה אוטומטית (דקות)</label>
+          <input type="number" id="lock-timeout-input" min="1" max="120" value="15" style="width:80px;" />
+        </div>
+        <div>
+          <label class="text-muted" style="display:block;margin-bottom:.3rem;">גודל גופן (12–22)</label>
+          <input type="number" id="font-size-input" min="12" max="22" value="15" style="width:80px;" />
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:.8rem;">
+          <div class="text-muted" style="margin-bottom:.5rem;font-weight:500;">שינוי סיסמה</div>
+          <div style="display:flex;flex-direction:column;gap:.4rem;">
+            <input type="password" id="old-password-input"  placeholder="סיסמה נוכחית" />
+            <input type="password" id="new-password-input"  placeholder="סיסמה חדשה" />
+            <input type="password" id="new-password2-input" placeholder="אימות סיסמה חדשה" />
+          </div>
+          <div class="lock-error" id="pw-change-error" style="margin-top:.3rem;"></div>
+        </div>
+      </div>
+      <div class="modal-actions" style="margin-top:.5rem;">
+        <button class="btn btn-primary" id="settings-save-btn"   style="width:auto;">שמור</button>
+        <button class="btn btn-ghost"   id="settings-cancel-btn">ביטול</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/mock.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/components/entry-card.js"></script>
+  <script src="js/components/note-card.js"></script>
+  <script src="js/views/journal.js"></script>
+  <script src="js/views/history.js"></script>
+  <script src="js/views/notes.js"></script>
+  <script src="js/app.js"></script>
+
+<!-- ══ מודל — אישור מחיקה ════════════════════════════════ -->
+<div id="confirm-overlay" class="hidden"
+     style="position:fixed;inset:0;background:rgba(0,0,0,.45);
+            display:flex;align-items:center;justify-content:center;z-index:9999;">
+  <div style="background:var(--surface);border:1px solid var(--border);
+              border-radius:var(--radius);width:290px;overflow:hidden;
+              box-shadow:var(--shadow-lg);">
+    <div style="padding:1.3rem 1.25rem;text-align:center;">
+      <p id="confirm-msg"
+         style="font-size:.92rem;font-weight:600;color:var(--text);margin:0 0 .35rem;"></p>
+      <p style="font-size:.8rem;color:var(--text-muted);margin:0;line-height:1.5;">
+        לא ניתן לשחזר לאחר המחיקה
+      </p>
+    </div>
+    <div style="background:var(--danger-light);padding:.9rem 1.25rem;
+                display:flex;gap:8px;justify-content:center;">
+      <button id="confirm-ok" class="btn btn-danger"
+              style="background:var(--danger);color:#fff;padding:.4rem 1rem;">מחק</button>
+      <button id="confirm-no" class="btn btn-ghost"
+              style="background:var(--surface);padding:.4rem 1rem;">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const { restoreStateCurrent, StateFlags } = window.__TAURI__.windowState;
+      await restoreStateCurrent(StateFlags.ALL);
+    });
+  </script>
+
+<script>
+    document.addEventListener('contextmenu', e => e.preventDefault(), { capture: true });
+  </script>
+
+</body>
+</html>
