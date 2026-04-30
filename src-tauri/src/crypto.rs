@@ -2,7 +2,7 @@
 // שכבת ההצפנה המלאה של האפליקציה
 // argon2  → גזירת מפתח מסיסמה
 // aes-gcm → הצפנה/פענוח של נתונים
-
+use zeroize::Zeroize;
 use aes_gcm::{
     aead::{Aead, KeyInit, OsRng},
     Aes256Gcm, Key, Nonce,
@@ -46,8 +46,8 @@ pub struct DerivedKey(pub [u8; KEY_LEN]);
 
 impl Drop for DerivedKey {
     fn drop(&mut self) {
-        // מנקה את המפתח מהזיכרון בעת השמדה
-        self.0.iter_mut().for_each(|b| *b = 0);
+        // מונע Dead Store Elimination — מוחק את המפתח מהזיכרון בבטחה
+        self.0.zeroize();
     }
 }
 
